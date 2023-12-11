@@ -37,7 +37,7 @@ class MyServerCallbacks: public BLEServerCallbacks {
 void setup() {
   // Start serial communication 
   Serial.begin(115200);
-
+  Serial.println("Setup BLE server \n");
 
   // Create the BLE Device
   BLEDevice::init(bleServerName);
@@ -71,7 +71,7 @@ void loop() {
     static char valueBLE[6] = "12";
     bleDataCharacteristics.setValue(valueBLE);
     bleDataCharacteristics.notify();
-    Serial.print("Value sent");
-    delay(100);
+    Serial.print("Value sent \n");
+    delay(1000);
   }
 }
