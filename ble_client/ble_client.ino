@@ -1,6 +1,9 @@
 #include "BLEDevice.h"
 #include <Wire.h>
+#include "mpu6500.h"
 
+/* Mpu6500 object */
+bfs::Mpu6500 imu;
 
 //BLE Server name (the other ESP32 name running the server sketch)
 #define bleServerName "BME280_ESP32"
@@ -10,7 +13,7 @@
 static BLEUUID bmeServiceUUID("91bad492-b950-4226-aa2b-4ede9fa42f59");
 
 // BLE Characteristics
-static BLEUUID dataCharacteristicUUID("cba1d466-344c-4be3-ab3f-189f80dd7518");
+//static BLEUUID dataCharacteristicUUID("cba1d466-344c-4be3-ab3f-189f80dd7518");
 
 
 //Flags stating if should begin connecting and if the connection is up
@@ -21,7 +24,7 @@ static boolean connected = false;
 static BLEAddress *pServerAddress;
  
 //Characteristicd that we want to read
-static BLERemoteCharacteristic* dataCharacteristic;
+static BLERemoteCharacteristic* dataCharacteristic("cba1d466-344c-4be3-ab3f-189f80dd7518", BLECharacteristic::PROPERTY_WRITE);
 
 //Activate notify
 const uint8_t notificationOn[] = {0x1, 0x0};
@@ -47,11 +50,13 @@ bool connectToServer(BLEAddress pAddress) {
   if (pRemoteService == nullptr) {
     Serial.print("Failed to find our service UUID: ");
     Serial.println(bmeServiceUUID.toString().c_str());
+    Serial.println("coucou");
+
     return (false);
   }
  
   // Obtain a reference to the characteristics in the service of the remote BLE server.
-  dataCharacteristic = pRemoteService->getCharacteristic(dataCharacteristicUUID);
+ // dataCharacteristic = pRemoteService->getCharacteristic(dataCharacteristicUUID);
 
   if (dataCharacteristic == nullptr) {
     Serial.print("Failed to find our characteristic UUID");
@@ -96,6 +101,19 @@ void setup() {
 
   //Start serial communication
   Serial.begin(115200);
+
+    imu.Config(&Wire, bfs::Mpu6500::I2C_ADDR_PRIM);
+  /* Initialize and configure IMU */
+  if (!imu.Begin()) {
+    Serial.println("Error initializing communication with IMU");
+    while(1) {}
+  }
+  /* Set the sample rate divider */
+  if (!imu.ConfigSrd(19)) {
+    Serial.println("Error configured SRD");
+    while(1) {}
+  }
+
   while (!Serial);
   Serial.println("Starting Arduino BLE Client application...");
 
@@ -115,6 +133,7 @@ void loop() {
   // If the flag "doConnect" is true then we have scanned for and found the desired
   // BLE Server with which we wish to connect.  Now we connect to it.  Once we are
   // connected we set the connected flag to be true.
+  
   if (doConnect == true) {
     if (connectToServer(*pServerAddress)) {
       Serial.println("We are now connected to the BLE Server.");
