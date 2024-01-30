@@ -15,9 +15,14 @@
 // Structure example to receive data
 // Must match the sender structure
 typedef struct struct_message {
-  int id;
-  int x;
-  int y;
+  int id; // must be unique for each sender board
+  float imu_data;
+  float accel_x;
+  float accel_y;
+  float accel_z;
+  float gyro_x;
+  float gyro_y;
+  float gyro_z;
 }struct_message;
 
 // Create a struct_message called myData
@@ -40,10 +45,10 @@ void OnDataRecv(const uint8_t * mac_addr, const uint8_t *incomingData, int len) 
   memcpy(&myData, incomingData, sizeof(myData));
   Serial.printf("Board ID %u: %u bytes\n", myData.id, len);
   // Update the structures with the new incoming data
-  boardsStruct[myData.id-1].x = myData.x;
-  boardsStruct[myData.id-1].y = myData.y;
-  Serial.printf("x value: %d \n", boardsStruct[myData.id-1].x);
-  Serial.printf("y value: %d \n", boardsStruct[myData.id-1].y);
+  boardsStruct[myData.id-1].accel_x = myData.accel_x;
+  boardsStruct[myData.id-1].gyro_z = myData.gyro_z;
+  Serial.printf("x accel value: %f \n", boardsStruct[myData.id-1].accel_x);
+  Serial.printf("z gyro value: %f \n", boardsStruct[myData.id-1].gyro_z);
   Serial.println();
 }
  
