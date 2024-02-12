@@ -11,6 +11,7 @@ void setup() {
   BLEDevice::init("Mon serveur BLE");
 
   // Création du serveur BLE
+  
   BLEServer *pServer = BLEDevice::createServer();
 
   // Création d'un service BLE
