@@ -25,10 +25,10 @@ The IP adress of this gateway need to be allowed by mongo to access and connect 
 #include <WiFiClientSecure.h>
 #include <esp_wifi.h>
 
-#define BUFF_SIZE 5
+#define BUFF_SIZE 20
 
-const char* SSID = "Freebox-0B3678";        // Replace with good WiFi SSID
-const char* PASSWORD = "d4wn7qwtz4qdxt53qcnd4w"; // Replace with good WiFi password
+const char* SSID = "Socquet";        // Replace with good WiFi SSID
+const char* PASSWORD = "1029384756"; // Replace with good WiFi password
 const char* mongoDbUrl = "https://eu-west-2.aws.data.mongodb-api.com/app/data-rdkuq/endpoint/data/v1/action/insertOne"; // url for Mongo database
 const char* APIKEY = "Y6Wvu2DllIPTCsZYaIumNhwx7ZBug6dQOSgS9rIV5fdHSsoZaLoDTL1MtDzh0gvj"; // api key for our database
 
@@ -86,7 +86,7 @@ void deinitEspNow(){
 void initWiFi(){
   // Connecting to Wi-Fi
   Serial.println("Connecting to WiFi");
-  WiFi.mode(WIFI_AP_STA);
+  WiFi.mode(WIFI_STA);
   WiFi.begin(SSID, PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
@@ -188,8 +188,7 @@ void OnDataRecv(const uint8_t * mac_addr, const uint8_t *incomingData, int len) 
 
 void setup() {
   Serial.begin(115200);
-
-  WiFi.mode(WIFI_AP_STA);
+  WiFi.mode(WIFI_STA);
   initEspNow();
 }
 
@@ -200,8 +199,9 @@ void loop() {
     idx = 0;
     sendToDB();
     deinitWiFi();
-    WiFi.mode(WIFI_AP_STA);
+    WiFi.mode(WIFI_AP);
     initEspNow();
+    ESP.restart();
   }
 
 }

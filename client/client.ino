@@ -139,5 +139,5 @@ void loop() {
   else {
     Serial.println("Error sending the data");
   }
-  delay(2000);
+  delay(200);
 }
